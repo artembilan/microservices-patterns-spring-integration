@@ -1,0 +1,41 @@
+= Transactional Outbox
+
+See detailed explanation of this pattern on the https://microservices.io/patterns/data/transactional-outbox.html[Microservice Architecture].
+In two words: we have to publish business data into a messaging middleware only when it is saved to database successfully.
+
+Fortunately, Spring Integration already has all the components required for this pattern implementation:
+
+1. Channel adapters for databases and messaging brokers;
+2. The message store EI pattern implementation for JDBC can be used as a mentioned in the Outbox pattern table for messages to relay;
+3. The `QueueChannel` with transactional poller is exactly a relay to publish stored message in the end.
+
+The crucial component for an Outbox pattern engine we chose is a https://docs.spring.io/spring-integration/docs/current/reference/html/message-routing.html#router-implementations-recipientlistrouter[Recipient List Router] which is able to send the same message to several channels.
+In our case we mark it as transactional to be able to perform and `INSERT` into domain model table (See `ShoppingOrder` entity) and then sequentially into `INT_CHANNEL_MESSAGE` via `QueueChannel` based on the `JdbcChannelMessageStore`.
+The poller for this `QueueChannel` on the consumer side tries transactionally to publish a record with a business object into an Apache Kafka topic.
+
+NOTE: The business data must be `Serializable` since this is currently only a mechanism how `Message<?>` can be stored into `INT_CHANNEL_MESSAGE` table for RDBMS.
+
+So, if we fail to insert data into domain model table, we won't insert message into `INT_CHANNEL_MESSAGE`.
+If publisher to messaging middleware on the consumer fails, the message will remain in the `INT_CHANNEL_MESSAGE` because polling transaction has been rolled back.
+
+The unit test for this project takes an `OrderGateway` entry point and produces some `ShoppingOrder` entity.
+Via `@KafkaListener` on the `orders` we verify that entity has been produced by the Outbox properly (pay attention the entity is (de)serialized as JSON for Apache Kafka interaction).
+Then we check that entity is stored successfully into `ORDERS` table and there is no orphaned messages stored in the `INT_CHANNEL_MESSAGE` - Outbox table.
+
+The JPA and JDBC solution can be changed to any supported NoSQL database, for example https://docs.spring.io/spring-integration/docs/current/reference/html/mongodb.html#mongodb[Spring Integration with MongoDb].
+
+== Spring Boot and Spring Integration resources
+
+* https://docs.gradle.org[Official Gradle documentation]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/[Spring Boot Gradle Plugin Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#build-image[Create an OCI image]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.kafka[Spring for Apache Kafka]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#data.sql.jpa-and-spring-data[Spring Data JPA]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.spring-integration[Spring Integration]
+* https://docs.spring.io/spring-integration/reference/html/dsl.html[Spring Integration Java DSL Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/jpa.html[Spring Integration JPA Module Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/jdbc.html[Spring Integration JDBC Module Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/kafka.html[Spring Integration Apache Kafka Module Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/testing.html[Spring Integration Test Module Reference Guide]
+
+

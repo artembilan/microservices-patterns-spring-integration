@@ -1,0 +1,12 @@
+= Microservices Patterns with Spring Integration
+
+This project serves as a reference implementation of various Microservices Patterns described on https://microservices.io/index.html[Microservice Architecture] with https://spring.io/projects/spring-integration[Spring Integration Framework] and https://spring.io/projects/spring-boot[Spring Boot].
+Since Spring Integration is fully based on messaging, which can be distributed, we also include some https://developer.confluent.io/patterns[Event Streaming Patterns] implementations together with https://spring.io/projects/spring-cloud-stream[Spring Cloud Stream Framework].
+
+Every single module of this project is fully independent and ready to use Spring Boot application for particular pattern: they are just generated via https://start.spring.io[start.spring.io].
+However, the `$springBootVersion` variable might be changes since it is pulled from the `gradle.properties` of the root project.
+
+You can run `./gradlew test` (or `build`) for the whole project or just chose specific module to run.
+
+See target module READMEs for more details of the pattern they implement and how.
+The tests in modules verify the pattern in action and its implementation with Spring Integration.
