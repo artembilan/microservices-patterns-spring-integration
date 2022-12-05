@@ -36,6 +36,5 @@ The JPA and JDBC solution can be changed to any supported NoSQL database, for ex
 * https://docs.spring.io/spring-integration/reference/html/jpa.html[Spring Integration JPA Module Reference Guide]
 * https://docs.spring.io/spring-integration/reference/html/jdbc.html[Spring Integration JDBC Module Reference Guide]
 * https://docs.spring.io/spring-integration/reference/html/kafka.html[Spring Integration Apache Kafka Module Reference Guide]
-* https://docs.spring.io/spring-integration/reference/html/testing.html[Spring Integration Test Module Reference Guide]
 
 
