@@ -1,0 +1,46 @@
+= mRPC Concept
+
+The `RPC` pattern and principle exists already for a log time.
+There are many ways to make a communication between client and the server and represent it really as a remote procedure call.
+Even if Spring Cloud Stream project is aimed for distributes streaming solutions via chain of functions exposed via bindings on a messaging middleware, every single function in this system can be treated exactly as a remote procedure where we could perform a request-reply pattern via messaging exchange.
+Such a function is just a simple cloud native microservice where it exposes connections into an input and output binding destinations through which we can send a request and receive reply using respective messaging API for the broker in between.
+Therefore, an `mRPC` - *messaging Remote Procedure Call*.
+In Spring Integration this request-reply interaction is called a `Gateway`.
+Since there is no a gateway implementation in Spring Cloud Stream, we are going to try to simulate a distributed request-reply scenario via Spring Integration API where we have all the required instruments still leveraging Spring Cloud Stream components as a first level requirement for our `mRPC` concept.
+
+The implementation is like this:
+
+1. We use a Messaging Gateway from Spring Integration as end-user high-level API to send a request and wait from reply.
+The fact that underneath we perform a Spring Cloud Stream call over bindings is definitely hidden from end-user thanks to Spring Integration flows definitions;
+2. Since we are going to perform a network communication via Spring Cloud Stream bindings, we have to ensure that data we transfer is serializable regarding a protocol dictated by the respective messaging middleware.
+Therefore, for Spring Integration's `TemporaryReplyChannel` header, which is crucial in request-reply pattern in the gateway implementation, we will rely on a `HeaderChannelRegistry` which can store this non-serializable `TemporaryReplyChannel` under some generated key representation;
+3. Now we are able to send a request in Spring Cloud Stream binding, and we do that via `StreamBridge` API.
+Note that now this `replyChannel` header as a string representation is going to be sent over the network to remote function alongside with the payload;
+4. Since the target remote function, we'd like to call, is exposed by Spring Cloud Stream bindings on dedicated endpoints, and it is not aware of our request-reply intentions, we don't have choice unless have a separate `Consumer` binding in our `mRPC` application.
+Therefore, we expose a `Consumer` binding to listen on the function's output destination;
+5. As long as the target Spring Cloud Stream microservice produces output messages with headers as well, we will be able to restore  automatically (thanks to Spring Integration functionality) a mentioned before `TemporaryReplyChannel` header from the `HeaderChannelRegistry` and correlate this reply back to the gateway request;
+6. Since our `mRPC` application can be deployed in several instances, we are going to have several parallel consumers on the same reply destination by default (no explicit consumer group for Spring Cloud Stream) and this is good, since we with this distributed, not connected request-reply scenario we have to ensure that reply comes back to the caller.
+However, according to the anonymous subscriptions, all our Spring Cloud Stream consumers are going to get all the replies.
+Therefore, we have to filter out those replies which are not for our current instance using a `HeaderChannelRegistry` API against `replyChannel` header name from the received message: if `TemporaryReplyChannel` is not in the current application memory, there is no entry for respective key from the header.
+
+For simplicity of demonstration, this application is doing just a plain `to upper case` transformation in the target bound Spring Cloud Stream microservice.
+This `mRCP` sample is not going to work as is since there is no any binder in the dependencies.
+Plus the target Spring Cloud Stream microservice to call is left out of scope for this approach to demonstrate.
+However, the test-case brings for us a RabbitMQ binder and starts a Testcontainer for RabbitMQ broker.
+In addition, the test dependency includes out-of-the-box `spel-function` and `payload-converter-function` from https://spring.io/projects/spring-cloud-stream-applications#overview[Spring Cloud Stream Applications].
+A composite `byteArrayTextToString|spelFunction` function is exposed as a Spring Cloud Stream microservice on the `upper-case.input` and `upper-case.output` destinations.
+The `mRPC` uses those destinations for its request-reply implementation via `StreamBridge` and `Consumer` binding.
+
+== Spring Boot and Spring Integration resources
+
+* https://docs.gradle.org[Official Gradle documentation]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/[Spring Boot Gradle Plugin Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#build-image[Create an OCI image]
+* https://www.testcontainers.org[Testcontainers]
+* https://www.testcontainers.org/modules/rabbitmq[Testcontainers RabbitMQ Module Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.spring-integration[Spring Integration]
+* https://docs.spring.io/spring-integration/reference/html/amqp.html[Spring Integration AMQP Module Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.amqp[Spring for RabbitMQ]
+* https://docs.spring.io/spring-cloud-stream/docs/current/reference/html/spring-cloud-stream.html#spring-cloud-stream-overview-introducing[Cloud Stream]
+
+

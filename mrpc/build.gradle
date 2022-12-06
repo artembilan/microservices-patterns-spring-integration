@@ -1,0 +1,44 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version "$springBootVersion"
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'org.springframework.integration.microservices'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+ext {
+	set('springCloudVersion', '2022.0.0-RC2')
+	set('streamApplicationsVersion', '4.0.0-SNAPSHOT')
+	set('testcontainersVersion', '1.17.6')
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+
+	testImplementation "org.springframework.cloud.fn:payload-converter-function:$streamApplicationsVersion"
+	testImplementation "org.springframework.cloud.fn:spel-function:$streamApplicationsVersion"
+	testImplementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:rabbitmq'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

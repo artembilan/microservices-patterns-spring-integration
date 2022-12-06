@@ -7,6 +7,10 @@ Every single module of this project is fully independent and ready to use Spring
 However, the `$springBootVersion` variable might be changes since it is pulled from the `gradle.properties` of the root project.
 
 You can run `./gradlew test` (or `build`) for the whole project or just chose specific module to run.
-
-See target module READMEs for more details of the pattern they implement and how.
 The tests in modules verify the pattern in action and its implementation with Spring Integration.
+
+See specific module for more details of the pattern (or recipe) it implements and how:
+
+* link:framer[`Framer`] - multi-window distribution
+* link:mrpc[`mRPC`] - request-reply vis Spring Cloud Stream
+* link:outbox[`Outbox`] - transactional outbox pattern implementation
