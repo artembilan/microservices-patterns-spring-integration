@@ -11,6 +11,7 @@ The tests in modules verify the pattern in action and its implementation with Sp
 
 See specific module for more details of the pattern (or recipe) it implements and how:
 
+* link:circuit-breaker[`circuit-breaker`] - circuit breaker pattern implementation
 * link:framer[`Framer`] - multi-window distribution
 * link:mrpc[`mRPC`] - request-reply vis Spring Cloud Stream
 * link:outbox[`Outbox`] - transactional outbox pattern implementation

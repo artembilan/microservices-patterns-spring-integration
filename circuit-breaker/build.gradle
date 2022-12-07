@@ -1,0 +1,26 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version "$springBootVersion"
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'org.springframework.integration.microservices'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.integration:spring-integration-http'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

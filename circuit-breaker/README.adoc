@@ -1,0 +1,38 @@
+= Circuit Breaker
+
+The Circuit Breaker is not a new pattern and was not invented together with Microservices principle.
+Martin Fowler had explained this feature https://martinfowler.com/bliki/CircuitBreaker.html[years ago], but either way see more details on our https://microservices.io/patterns/reliability/circuit-breaker.html[Microservice Architecture] foundation.
+Spring Integration (together with Spring Boot auto-configuration), being a good framework for Microservices development, also provides its own simple https://docs.spring.io/spring-integration/docs/current/reference/html/messaging-endpoints.html#circuit-breaker-advice[`RequestHandlerCircuitBreakerAdvice`] implementation.
+Yes, there is also https://spring.io/projects/spring-cloud-circuitbreaker[Spring Cloud Circuit Breaker] project, which provides some primitives and API to configure and call services withing Circuit Breaker callbacks, but we really will concentrate in this demo exactly on Spring Integration native approach since this is really a goal of this project anyway.
+
+So, in two words: Circuit Breaker wraps a service call, breaks the circuit when number of attempts is exhausted, throwing specific "open" exception, then attempts again after `halfOpen` timeout.
+All descriptions for this pattern suggest some `fallback` option to be called in case of `open` state.
+Since Spring Integration operates more on the higher level than just method calls, it throws only a specific `CircuitBreakerOpenException` leaving the freedom to decide what to do up to target project.
+One of the option is to combine this advice with some other, e.g. with a `RequestHandlerRetryAdvice` like we do in this demo.
+The point of using this advice together with a `RequestHandlerCircuitBreakerAdvice` is to be able to retry automatically and perform a fallback when `CircuitBreakerOpenException` happens.
+
+This demo is a bit tricky and contains both microservices parts for simplicity to test in isolation.
+The `CircuitBreakerApplication.RemoteServiceConfiguration` exposes a REST service based on Spring Integration flow definition which is not started automatically to the `RequestHandlerCircuitBreakerAdvice` to do its logic during testing.
+This service just replies with `Hello` to the value of the `name` HTTP request parameter.
+The `CircuitBreaker` class represents the pattern in action via Spring Integration primitives and configuration.
+See its setters for more information.
+For demonstration purposes of the `CircuitBreakerOpenException` fallback option from the `RequestHandlerRetryAdvice`, the last one is configured with an `AlwaysRetryPolicy` and never retry on `CircuitBreakerOpenException`.
+The service to call is of course a `MessageHandler` for HTTP clients.
+The URL for this client is based on a randomly selected port for Tomcat when JUnit test is started.
+See `rest-service.url` property in the `resource/application.properties`.
+The `@ServiceActivator` POJO method on a `recoveryChannel` is for demonstrating a fallback option of the Circuit Breaker which is initiated by the framework via `RequestHandlerRetryAdvice.recoveryCallback`.
+It returns some stub payload and shows how to copy request message headers to preserve at least an important `replyChannel` header which is needed for initial request-reply call into this application.
+
+The unit test in this project starts an embedded Tomcat with a random port populated into a `local.server.port` configuration property.
+During test execution, some DEBUG information is printed from the `RetryTemplate` and `RequestHandlerCircuitBreakerAdvice` which may give some understanding in the logic of Circuit Breaker pattern implementation with Spring Integration.
+
+== Spring Boot and Spring Integration resources
+
+* https://docs.gradle.org[Official Gradle documentation]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/[Spring Boot Gradle Plugin Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#build-image[Create an OCI image]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.spring-integration[Spring Integration]
+* https://docs.spring.io/spring-integration/reference/html/dsl.html[Spring Integration Java DSL Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/http.html[Spring Integration HTTP Module Reference Guide]
+
+
