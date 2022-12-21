@@ -16,11 +16,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @EmbeddedKafka(bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+@DirtiesContext
 class OutboxApplicationTests {
 
 	@Autowired

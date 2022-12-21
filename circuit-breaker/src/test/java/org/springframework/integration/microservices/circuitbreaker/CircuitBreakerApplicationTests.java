@@ -8,10 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.integration.core.MessagingTemplate;
 import org.springframework.integration.http.inbound.HttpRequestHandlingMessagingGateway;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext
 class CircuitBreakerApplicationTests {
 
 	@Autowired

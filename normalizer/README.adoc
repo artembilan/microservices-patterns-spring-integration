@@ -1,0 +1,54 @@
+= Normalizer
+
+There is no a `Normalizer` pattern on the https://microservices.io/patterns/index.html[Microservice Architecture].
+However, it is explained properly by Gregor Hohpe in the https://www.enterpriseintegrationpatterns.com/Normalizer.html[Enterprise Integration Patterns].
+I find this pattern very relevant to the Microservice Architecture and how those microservices can communicate to each other.
+In two words: the goal of `Normalizer` pattern is to convert various data from different sources into something common which can be understood by downstream service.
+So, this is some kind of intermediary (or if you wish - proxy) between clients and target service, where clients not fully care about data format the target service expects from us.
+Another obstacle could be a refreshed target data format where our client has not been adapted yet.
+
+According to EIP, the `Normalizer` pattern is a composite component which does not have a strict programming model and can be implemented different ways according to the target domain requirements.
+The input endpoint is a `router` pattern which may make a decision from some inbound message header or from a payload type or some other more sophisticated analysis against content like `xpath` or `jsonPath`.
+The source data format might be extracted as a logic of a routing sequence.
+A routing result might go directly to specific transformer, e.g. XML to JSON.
+Or it can be as a chain of several transformation steps, e.g. from YAML to string and then to the file.
+The output common data format might be requested from another microservice.
+With all of these vague target business requirements it is impossible to implement one single composite component in Spring Integration as it is done with a `Scatter-Gather`.
+Therefore, we provide this application as recommendation to follow original EI `Normalizer` pattern with some general ideas what it could be and how it may fit into a broader Microservice Architecture.
+
+For simplicity and for a most common use-case we implement a routing logic based on a `MessageHeaders.CONTENT_TYPE` header.
+This header is typically populated by HTTP request, so we chose a `WebFlux.inboundGateway("/normalize")` as a one of the entry point into our `Normalizer` implementation.
+This REST endpoint in our sample can accept `application/xml` and `text/csv` at the moment.
+Although having its general nature any content may be received if our router implementation can handle it.
+Again, for simplicity and sample readability, we just provide a set of various transformers according to the supported content types.
+As the output of this application we chose a JSON representation of a `CreditCardTransaction` domain model.
+Of course, those various inputs are just variants of the same model but in different formats.
+
+The `NormalizerApplicationTests` demonstrates a couple use-cases of producing an XML and CSV data over the REST call and expecting a `CreditCardTransaction` back in common JSON format.
+
+To demonstrate a flexibility of the approach with Spring Integration we provide another input endpoint - the shared `cardTransactionInput` directory scanning for `.properties` files.
+The `Files.inboundAdapter(inputDir)` polls this directory for files, sends a `Properties` object to the router with an `application/properties` content type.
+The router then propagate this data into a `propertiesToJson` `IntegrationFlow` which just converts this `Properties` object into a `CreditCardTransaction` JSON result.
+In the end this flow replies to the populated before `normalizerFilesOutput.input` `replyChannel` header.
+And JSON is written into a `cardTransactionOutput` directory as a file based on a `.properties` input file name with a `.json` extension.
+The `NormalizerApplicationTests.normalizePropertiesFile()` unit test demonstrates a processing of writing input file and verification of the content of the output file.
+
+NOTE: If `cardTransactionInput` and `cardTransactionOutput` are not present in the project, they are created automatically on application start.
+After running the `NormalizerApplicationTests`, you can observe `testCardTransaction.properties` input and `testCardTransaction.json` output files in those directories.
+
+Another external interaction could be implemented via Messaging middleware where transformation `Function` is bound by Spring Cloud Stream, but the routing and conversion logic in this `Normalizer` will remain the same.
+
+The microservice implementing this pattern could be as a part of https://microservices.io/patterns/apigateway.html[API Gateway].
+
+== Spring Boot and Spring Integration resources
+
+* https://docs.gradle.org[Official Gradle documentation]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/[Spring Boot Gradle Plugin Reference Guide]
+* https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#build-image[Create an OCI image]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.spring-integration[Spring Integration]
+* https://docs.spring.io/spring-integration/reference/html/dsl.html[Spring Integration Java DSL Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/http.html[Spring Integration HTTP Module Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/file.html[Spring Integration File Module Reference Guide]
+* https://docs.spring.io/spring-integration/reference/html/router.html[Spring Integration Router Implementations Reference Guide]
+
+

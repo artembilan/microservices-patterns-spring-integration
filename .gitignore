@@ -17,3 +17,5 @@ out
 target
 .springBeans
 .sts4-cache
+/normalizer/cardTransactionInput/
+/normalizer/cardTransactionOutput/
