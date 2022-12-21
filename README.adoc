@@ -14,4 +14,5 @@ See specific module for more details of the pattern (or recipe) it implements an
 * link:circuit-breaker[`circuit-breaker`] - circuit breaker pattern implementation
 * link:framer[`Framer`] - multi-window distribution
 * link:mrpc[`mRPC`] - request-reply vis Spring Cloud Stream
+* link:normalizer[`Normalizer`] - an EIP Normalizer implementation
 * link:outbox[`Outbox`] - transactional outbox pattern implementation
