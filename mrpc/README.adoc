@@ -1,8 +1,8 @@
 = mRPC Concept
 
-The `RPC` pattern and principle exists already for a log time.
+The https://microservices.io/patterns/communication-style/rpi.html[`RPC`] pattern and principle exists already for a log time.
 There are many ways to make a communication between client and the server and represent it really as a remote procedure call.
-Even if Spring Cloud Stream project is aimed for distributes streaming solutions via chain of functions exposed via bindings on a messaging middleware, every single function in this system can be treated exactly as a remote procedure where we could perform a request-reply pattern via messaging exchange.
+Even if Spring Cloud Stream project is aimed for distributes streaming solutions through chain of functions exposed via bindings on a messaging middleware, every single function in this system can be treated exactly as a remote procedure where we could perform a request-reply pattern via messaging exchange.
 Such a function is just a simple cloud native microservice where it exposes connections into an input and output binding destinations through which we can send a request and receive reply using respective messaging API for the broker in between.
 Therefore, an `mRPC` - *messaging Remote Procedure Call*.
 In Spring Integration this request-reply interaction is called a `Gateway`.
@@ -42,5 +42,3 @@ The `mRPC` uses those destinations for its request-reply implementation via `Str
 * https://docs.spring.io/spring-integration/reference/html/amqp.html[Spring Integration AMQP Module Reference Guide]
 * https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#messaging.amqp[Spring for RabbitMQ]
 * https://docs.spring.io/spring-cloud-stream/docs/current/reference/html/spring-cloud-stream.html#spring-cloud-stream-overview-introducing[Cloud Stream]
-
-

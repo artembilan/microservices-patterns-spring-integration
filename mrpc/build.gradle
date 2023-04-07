@@ -1,12 +1,19 @@
+buildscript {
+	repositories {
+		gradlePluginPortal()
+		maven { url 'https://repo.spring.io/snapshot' }
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+	}
+}
+
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group = 'org.springframework.integration.microservices'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+apply plugin: 'org.springframework.boot'
 
 repositories {
 	mavenCentral()
@@ -15,9 +22,8 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', '2022.0.0-RC2')
-	set('streamApplicationsVersion', '4.0.0-SNAPSHOT')
-	set('testcontainersVersion', '1.17.6')
+	springCloudVersion = '2022.0.2'
+	streamApplicationsVersion = '4.0.0-SNAPSHOT'
 }
 
 dependencies {
@@ -34,8 +40,7 @@ dependencies {
 
 dependencyManagement {
 	imports {
-		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
 	}
 }
 

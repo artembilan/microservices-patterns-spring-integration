@@ -1,8 +1,19 @@
+buildscript {
+	repositories {
+		gradlePluginPortal()
+		maven { url 'https://repo.spring.io/snapshot' }
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+	}
+}
+
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version "$springBootVersion"
 	id 'io.spring.dependency-management' version '1.1.0'
 }
+
+apply plugin: 'org.springframework.boot'
 
 group = 'org.springframework.integration.microservices'
 version = '0.0.1-SNAPSHOT'
@@ -10,6 +21,8 @@ sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {

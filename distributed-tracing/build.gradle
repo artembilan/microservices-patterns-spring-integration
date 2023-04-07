@@ -20,23 +20,36 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
 	maven { url 'https://repo.spring.io/snapshot' }
 }
 
+ext['spring-integration.version'] = '6.1.0-SNAPSHOT'
+
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-artemis'
 	implementation 'org.springframework.boot:spring-boot-starter-integration'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'io.micrometer:context-propagation'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kinesis:4.0.0-SNAPSHOT'
+	implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.1'
+	implementation 'org.springframework.integration:spring-integration-jdbc'
+	implementation 'org.springframework.integration:spring-integration-jms'
 	implementation 'org.springframework.integration:spring-integration-webflux'
-	implementation 'org.springframework.integration:spring-integration-file'
-	implementation 'org.springframework.integration:spring-integration-xml'
-	implementation 'com.sun.xml.bind:jaxb-impl'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.integration:spring-integration-test'
-	testImplementation 'org.awaitility:awaitility'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:localstack'
+	testImplementation 'org.apache.activemq:artemis-jakarta-server'
+
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
