@@ -75,7 +75,7 @@ class DistributedTracingApplicationTests {
 
 		Observation parentObservation = Observation
 				.createNotStarted("test-parent-observation", this.observationRegistry)
-				.lowCardinalityKeyValue("junit.test", DistributedTracingApplicationTests.class.getName())
+				.lowCardinalityKeyValue("service.name", DistributedTracingApplicationTests.class.getName())
 				.start();
 
 		Mono<HttpStatusCode> responseMono =
