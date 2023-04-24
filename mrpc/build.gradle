@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/snapshot' }
+		maven { url 'https://repo.spring.io/milestone' }
 	}
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
@@ -18,12 +18,17 @@ apply plugin: 'org.springframework.boot'
 repositories {
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 ext {
 	springCloudVersion = '2022.0.2'
-	streamApplicationsVersion = '4.0.0-SNAPSHOT'
+	streamApplicationsVersion = '4.0.0-M1'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+	}
 }
 
 dependencies {
@@ -36,12 +41,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.testcontainers:rabbitmq'
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
-	}
 }
 
 tasks.named('test') {

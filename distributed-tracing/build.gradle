@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/snapshot' }
+		maven { url 'https://repo.spring.io/milestone' }
 	}
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
@@ -25,8 +25,6 @@ repositories {
 	maven { url 'https://repo.spring.io/snapshot' }
 }
 
-ext['spring-integration.version'] = '6.1.0-SNAPSHOT'
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-artemis'
@@ -36,7 +34,7 @@ dependencies {
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kinesis:4.0.0-SNAPSHOT'
-	implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.1'
+	implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.2'
 	implementation 'org.springframework.integration:spring-integration-jdbc'
 	implementation 'org.springframework.integration:spring-integration-jms'
 	implementation 'org.springframework.integration:spring-integration-webflux'

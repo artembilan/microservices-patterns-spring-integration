@@ -14,9 +14,11 @@ import org.springframework.integration.dsl.IntegrationFlowDefinition;
 import org.springframework.integration.jdbc.store.JdbcChannelMessageStore;
 import org.springframework.integration.jdbc.store.channel.H2ChannelMessageStoreQueryProvider;
 import org.springframework.integration.jpa.dsl.Jpa;
+import org.springframework.integration.jpa.dsl.JpaUpdatingOutboundEndpointSpec;
 import org.springframework.integration.jpa.outbound.JpaOutboundGateway;
 import org.springframework.integration.jpa.support.PersistMode;
 import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.integration.kafka.dsl.KafkaProducerMessageHandlerSpec;
 import org.springframework.integration.kafka.outbound.KafkaProducerMessageHandler;
 import org.springframework.integration.store.ChannelMessageStore;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -30,17 +32,13 @@ public class OutboxApplication {
 	}
 
 	@Bean
-	JpaOutboundGateway ordersJpaHandler(EntityManager entityManager) {
-		return Jpa.outboundAdapter(entityManager)
-				.persistMode(PersistMode.PERSIST)
-				.get();
+	JpaUpdatingOutboundEndpointSpec ordersJpaHandler(EntityManager entityManager) {
+		return Jpa.outboundAdapter(entityManager).persistMode(PersistMode.PERSIST);
 	}
 
 	@Bean
-	KafkaProducerMessageHandler<?, ?> ordersKafkaProducer(KafkaTemplate<?, ?> kafkaTemplate) {
-		return Kafka.outboundChannelAdapter(kafkaTemplate)
-				.topic("orders")
-				.get();
+	KafkaProducerMessageHandlerSpec<?, ?, ?> ordersKafkaProducer(KafkaTemplate<?, ?> kafkaTemplate) {
+		return Kafka.outboundChannelAdapter(kafkaTemplate).topic("orders");
 	}
 
 	@Bean
