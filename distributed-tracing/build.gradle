@@ -1,7 +1,6 @@
 buildscript {
 	repositories {
 		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/milestone' }
 	}
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
@@ -21,8 +20,16 @@ sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+ext {
+	awsSdkVersion = '2.20.81'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "software.amazon.awssdk:bom:$awsSdkVersion"
+	}
 }
 
 dependencies {
@@ -33,7 +40,7 @@ dependencies {
 	implementation 'io.micrometer:context-propagation'
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
-	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kinesis:4.0.0-SNAPSHOT'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kinesis:4.0.0'
 	implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.2'
 	implementation 'org.springframework.integration:spring-integration-jdbc'
 	implementation 'org.springframework.integration:spring-integration-jms'

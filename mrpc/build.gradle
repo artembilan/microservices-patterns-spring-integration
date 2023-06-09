@@ -1,7 +1,6 @@
 buildscript {
 	repositories {
 		gradlePluginPortal()
-		maven { url 'https://repo.spring.io/milestone' }
 	}
 	dependencies {
 		classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
@@ -21,8 +20,8 @@ repositories {
 }
 
 ext {
-	springCloudVersion = '2022.0.2'
-	streamApplicationsVersion = '4.0.0-M1'
+	springCloudVersion = '2022.0.3'
+	streamApplicationsVersion = '4.0.0-M2'
 }
 
 dependencyManagement {

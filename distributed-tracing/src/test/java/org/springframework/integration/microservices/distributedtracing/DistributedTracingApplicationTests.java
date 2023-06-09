@@ -47,7 +47,7 @@ class DistributedTracingApplicationTests {
 
 	@Container
 	static LocalStackContainer LOCAL_STACK_CONTAINER =
-			new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.0.0"));
+			new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.1.0"));
 
 	@Autowired
 	ObservationRegistry observationRegistry;
